@@ -38,18 +38,18 @@ export const serviceNowAPI = {
     const params = new URLSearchParams();
     if (filters.stage) params.append('sysparm_query', `stage=${filters.stage}`);
     params.append('sysparm_limit', '1000');
-    
-    const response = await serviceNowClient.get(`/api/now/table/x_dxc_advisor_lead?${params}`);
+
+    const response = await serviceNowClient.get(`/now/table/x_dxc_advisor_lead?${params}`);
     return response.data.result;
   },
 
   updateLead: async (leadId, data) => {
-    const response = await serviceNowClient.patch(`/api/now/table/x_dxc_advisor_lead/${leadId}`, data);
+    const response = await serviceNowClient.patch(`/now/table/x_dxc_advisor_lead/${leadId}`, data);
     return response.data.result;
   },
 
   createLead: async (data) => {
-    const response = await serviceNowClient.post('/api/now/table/x_dxc_advisor_lead', data);
+    const response = await serviceNowClient.post('/now/table/x_dxc_advisor_lead', data);
     return response.data.result;
   },
 
@@ -58,18 +58,18 @@ export const serviceNowAPI = {
     const params = new URLSearchParams();
     if (filters.stage) params.append('sysparm_query', `stage=${filters.stage}`);
     params.append('sysparm_limit', '1000');
-    
-    const response = await serviceNowClient.get(`/api/now/table/x_dxc_advisor_opportunity?${params}`);
+
+    const response = await serviceNowClient.get(`/now/table/x_dxc_advisor_opportunity?${params}`);
     return response.data.result;
   },
 
   updateOpportunity: async (opportunityId, data) => {
-    const response = await serviceNowClient.patch(`/api/now/table/x_dxc_advisor_opportunity/${opportunityId}`, data);
+    const response = await serviceNowClient.patch(`/now/table/x_dxc_advisor_opportunity/${opportunityId}`, data);
     return response.data.result;
   },
 
   createOpportunity: async (data) => {
-    const response = await serviceNowClient.post('/api/now/table/x_dxc_advisor_opportunity', data);
+    const response = await serviceNowClient.post('/now/table/x_dxc_advisor_opportunity', data);
     return response.data.result;
   },
 
@@ -78,19 +78,19 @@ export const serviceNowAPI = {
     const params = new URLSearchParams();
     if (filters.status) params.append('sysparm_query', `status=${filters.status}`);
     params.append('sysparm_limit', '1000');
-    
-    const response = await serviceNowClient.get(`/api/now/table/x_dxc_advisor_quote?${params}`);
+
+    const response = await serviceNowClient.get(`/now/table/x_dxc_advisor_quote?${params}`);
     return response.data.result;
   },
 
   updateQuote: async (quoteId, data) => {
-    const response = await serviceNowClient.patch(`/api/now/table/x_dxc_advisor_quote/${quoteId}`, data);
+    const response = await serviceNowClient.patch(`/now/table/x_dxc_advisor_quote/${quoteId}`, data);
     return response.data.result;
   },
 
   // Recent Items API
   getRecentItems: async () => {
-    const response = await serviceNowClient.get('/api/now/table/sys_ui_list_recent?sysparm_limit=50');
+    const response = await serviceNowClient.get('/now/table/sys_ui_list_recent?sysparm_limit=50');
     return response.data.result;
   },
 

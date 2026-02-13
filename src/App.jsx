@@ -1,22 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import {
-  DxcHeader,
-  DxcTabs,
-  DxcInset,
-  DxcSpinner
-} from '@dxc-technology/halstack-react';
+  ThemeProvider,
+  createTheme,
+  CssBaseline,
+  AppBar,
+  Toolbar,
+  Typography,
+  Container,
+  Box,
+  Tabs,
+  Tab,
+  CircularProgress,
+  Grid,
+  Card,
+  CardContent,
+  Chip
+} from '@mui/material';
+import {
+  PersonAdd as LeadsIcon,
+  BusinessCenter as OpportunitiesIcon,
+  Description as QuotesIcon,
+  History as HistoryIcon
+} from '@mui/icons-material';
 import LeadsTab from './components/LeadsTab';
 import OpportunitiesTab from './components/OpportunitiesTab';
 import QuotesTab from './components/QuotesTab';
 import RecentTab from './components/RecentTab';
-import DashboardCards from './components/DashboardCards';
 import serviceNowAPI from './services/serviceNowAPI';
 import './App.css';
 import dxcLogo from './assets/DXCHorizontalTaglineFullColorDark.png';
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1976d2',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+});
+
+function TabPanel({ children, value, index }) {
+  return (
+    <div role="tabpanel" hidden={value !== index}>
+      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
 function App() {
   const [activeTab, setActiveTab] = useState(0);
-  const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({
     leads: [],
@@ -32,7 +66,6 @@ function App() {
     recentCount: 0
   });
 
-  // Load data on mount
   useEffect(() => {
     loadAllData();
   }, []);
@@ -62,7 +95,6 @@ function App() {
       });
     } catch (error) {
       console.error('Error loading data:', error);
-      // Load mock data for development/demo
       loadMockData();
     } finally {
       setLoading(false);
@@ -70,7 +102,6 @@ function App() {
   };
 
   const loadMockData = () => {
-    // Mock data for demonstration
     const mockLeads = [
       {
         sys_id: '1',
@@ -138,104 +169,145 @@ function App() {
     });
   };
 
-  const tabs = [
-    {
-      label: `Leads (${stats.leadsCount})`,
-      icon: 'user-plus'
-    },
-    {
-      label: `Opportunities (${stats.opportunitiesCount})`,
-      icon: 'briefcase'
-    },
-    {
-      label: `Quotes (${stats.quotesCount})`,
-      icon: 'file-invoice'
-    },
-    {
-      label: `Recent (${stats.recentCount})`,
-      icon: 'history'
-    }
-  ];
-
-  const renderTabContent = () => {
-    if (loading) {
-      return (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
-          <DxcSpinner label="Loading..." mode="large" />
-        </div>
-      );
-    }
-
-    switch (activeTab) {
-      case 0:
-        return <LeadsTab leads={dashboardData.leads} onRefresh={loadAllData} />;
-      case 1:
-        return <OpportunitiesTab opportunities={dashboardData.opportunities} onRefresh={loadAllData} />;
-      case 2:
-        return <QuotesTab quotes={dashboardData.quotes} onRefresh={loadAllData} />;
-      case 3:
-        return <RecentTab recentItems={dashboardData.recentItems} />;
-      default:
-        return null;
-    }
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <DxcHeader
-        content={
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <h1 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 600 }}>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+        {/* Header */}
+        <AppBar position="static" elevation={0}>
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, fontWeight: 600 }}>
               Advisor Assistant
-            </h1>
-          </div>
-        }
-        underlined
-      />
+            </Typography>
+          </Toolbar>
+        </AppBar>
 
-      <div style={{ flex: 1 }}>
-          <DxcInset space="2rem">
-            {/* Dashboard Cards */}
-            <DashboardCards
-              stats={stats}
-              activeTab={activeTab}
-              onTabChange={setActiveTab}
-              darkMode={darkMode}
-            />
+        {/* Main Content */}
+        <Container maxWidth="lg" sx={{ mt: 4, mb: 4, flex: 1 }}>
+          {/* Dashboard Cards */}
+          <Grid container spacing={3} sx={{ mb: 4 }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <Card>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <LeadsIcon color="primary" sx={{ mr: 1 }} />
+                    <Typography variant="h6">Leads</Typography>
+                  </Box>
+                  <Typography variant="h4" fontWeight="bold">
+                    {stats.leadsCount}
+                  </Typography>
+                  <Chip label="Active" size="small" color="success" sx={{ mt: 1 }} />
+                </CardContent>
+              </Card>
+            </Grid>
 
-            {/* Tabs */}
-            <div style={{ marginTop: '2rem' }}>
-              <DxcTabs
-                tabs={tabs}
-                activeTabIndex={activeTab}
-                onTabClick={setActiveTab}
-              />
-            </div>
+            <Grid item xs={12} sm={6} md={3}>
+              <Card>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <OpportunitiesIcon color="primary" sx={{ mr: 1 }} />
+                    <Typography variant="h6">Opportunities</Typography>
+                  </Box>
+                  <Typography variant="h4" fontWeight="bold">
+                    {stats.opportunitiesCount}
+                  </Typography>
+                  <Chip label="In Progress" size="small" color="warning" sx={{ mt: 1 }} />
+                </CardContent>
+              </Card>
+            </Grid>
 
-            {/* Tab Content */}
-            <div style={{ marginTop: '2rem' }}>
-              {renderTabContent()}
-            </div>
+            <Grid item xs={12} sm={6} md={3}>
+              <Card>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <QuotesIcon color="primary" sx={{ mr: 1 }} />
+                    <Typography variant="h6">Quotes</Typography>
+                  </Box>
+                  <Typography variant="h4" fontWeight="bold">
+                    {stats.quotesCount}
+                  </Typography>
+                  <Chip label="Pending" size="small" color="info" sx={{ mt: 1 }} />
+                </CardContent>
+              </Card>
+            </Grid>
 
-            {/* Powered By Footer */}
-            <div style={{ 
-              marginTop: '3rem', 
-              textAlign: 'center',
-              padding: '1.5rem',
-              borderTop: '1px solid #e0e0e0'
-            }}>
-              <div style={{ fontSize: '0.875rem', color: '#666', marginBottom: '0.5rem' }}>
-                Powered by
-              </div>
-              <img 
-                src={dxcLogo} 
-                alt="DXC Technology" 
-                style={{ height: '40px', opacity: 0.8 }}
-              />
-            </div>
-          </DxcInset>
-        </div>
-      </div>
+            <Grid item xs={12} sm={6} md={3}>
+              <Card>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                    <HistoryIcon color="primary" sx={{ mr: 1 }} />
+                    <Typography variant="h6">Recent</Typography>
+                  </Box>
+                  <Typography variant="h4" fontWeight="bold">
+                    {stats.recentCount}
+                  </Typography>
+                  <Chip label="Updated" size="small" color="default" sx={{ mt: 1 }} />
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          {/* Tabs */}
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={activeTab} onChange={handleTabChange}>
+              <Tab label={`Leads (${stats.leadsCount})`} icon={<LeadsIcon />} iconPosition="start" />
+              <Tab label={`Opportunities (${stats.opportunitiesCount})`} icon={<OpportunitiesIcon />} iconPosition="start" />
+              <Tab label={`Quotes (${stats.quotesCount})`} icon={<QuotesIcon />} iconPosition="start" />
+              <Tab label={`Recent (${stats.recentCount})`} icon={<HistoryIcon />} iconPosition="start" />
+            </Tabs>
+          </Box>
+
+          {/* Tab Panels */}
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+              <CircularProgress size={60} />
+            </Box>
+          ) : (
+            <>
+              <TabPanel value={activeTab} index={0}>
+                <LeadsTab leads={dashboardData.leads} onRefresh={loadAllData} />
+              </TabPanel>
+              <TabPanel value={activeTab} index={1}>
+                <OpportunitiesTab opportunities={dashboardData.opportunities} onRefresh={loadAllData} />
+              </TabPanel>
+              <TabPanel value={activeTab} index={2}>
+                <QuotesTab quotes={dashboardData.quotes} onRefresh={loadAllData} />
+              </TabPanel>
+              <TabPanel value={activeTab} index={3}>
+                <RecentTab recentItems={dashboardData.recentItems} />
+              </TabPanel>
+            </>
+          )}
+        </Container>
+
+        {/* Footer */}
+        <Box
+          component="footer"
+          sx={{
+            py: 3,
+            px: 2,
+            mt: 'auto',
+            bgcolor: 'background.paper',
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            textAlign: 'center'
+          }}
+        >
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Powered by
+          </Typography>
+          <img
+            src={dxcLogo}
+            alt="DXC Technology"
+            style={{ height: '40px', opacity: 0.8 }}
+          />
+        </Box>
+      </Box>
+    </ThemeProvider>
   );
 }
 

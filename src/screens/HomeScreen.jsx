@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Container,
@@ -10,7 +10,8 @@ import {
   Avatar,
   LinearProgress,
   IconButton,
-  Alert
+  Alert,
+  Tooltip
 } from '@mui/material';
 import {
   TrendingUp,
@@ -20,10 +21,14 @@ import {
   Phone,
   Stars,
   ArrowForward,
-  Lightbulb
+  Lightbulb,
+  VolumeUp,
+  VolumeOff
 } from '@mui/icons-material';
+import useSpeech from '../hooks/useSpeech';
 
 const HomeScreen = ({ userData }) => {
+  const { speak, stop, isSpeaking, isEnabled, toggleEnabled } = useSpeech();
   // Mock data - will be replaced with ServiceNow API
   const stats = {
     tasksToday: 12,
@@ -63,6 +68,29 @@ const HomeScreen = ({ userData }) => {
     { icon: <Phone />, label: 'Call Log', color: '#ed6c02' },
     { icon: <People />, label: 'Customer', color: '#9c27b0' }
   ];
+
+  // Speak welcome message on load
+  useEffect(() => {
+    if (isEnabled) {
+      const welcomeMessage = `Good morning ${userData.name.split(' ')[0]}. You have ${stats.tasksToday} tasks today, with ${stats.appointmentsToday} appointments scheduled.`;
+      // Delay slightly to let page load
+      const timer = setTimeout(() => speak(welcomeMessage), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, []); // Only run once on mount
+
+  // Speak AI insight
+  const speakInsight = (insight) => {
+    const message = `${insight.title}. ${insight.message}`;
+    speak(message);
+  };
+
+  // Speak daily summary
+  const speakDailySummary = () => {
+    const completionRate = Math.round((stats.tasksCompleted / stats.tasksToday) * 100);
+    const summary = `Here's your daily summary. You've completed ${stats.tasksCompleted} of ${stats.tasksToday} tasks, that's ${completionRate} percent. You have ${stats.appointmentsToday} appointments today, ${stats.leadsActive} active leads, and ${stats.opportunitiesOpen} open opportunities.`;
+    speak(summary);
+  };
 
   return (
     <Container maxWidth="md" sx={{ pb: 10, pt: 2 }}>
@@ -180,6 +208,18 @@ const HomeScreen = ({ userData }) => {
             AI Insights
           </Typography>
           <Chip label="Powered by AI" size="small" sx={{ ml: 1 }} />
+          <Box sx={{ ml: 'auto', display: 'flex', gap: 1 }}>
+            <Tooltip title="Read daily summary">
+              <IconButton size="small" onClick={speakDailySummary} color="primary">
+                <VolumeUp />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={isEnabled ? "Voice enabled" : "Voice disabled"}>
+              <IconButton size="small" onClick={toggleEnabled} color={isEnabled ? "secondary" : "default"}>
+                {isEnabled ? <VolumeUp /> : <VolumeOff />}
+              </IconButton>
+            </Tooltip>
+          </Box>
         </Box>
 
         {aiInsights.map((insight, index) => (
@@ -213,6 +253,16 @@ const HomeScreen = ({ userData }) => {
                     <ArrowForward sx={{ fontSize: 14, ml: 0.5 }} />
                   </Typography>
                 </Box>
+                <Tooltip title="Read aloud">
+                  <IconButton
+                    size="small"
+                    onClick={() => speakInsight(insight)}
+                    color="secondary"
+                    sx={{ alignSelf: 'flex-start' }}
+                  >
+                    <VolumeUp fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </Box>
             </CardContent>
           </Card>

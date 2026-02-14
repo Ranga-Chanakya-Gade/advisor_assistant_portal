@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import useSpeech from '../hooks/useSpeech';
 import {
   Container,
   Typography,
@@ -23,6 +24,8 @@ import {
 import { Add, CheckCircle, Schedule, Flag, Mic, MicOff, Close } from '@mui/icons-material';
 
 const TasksScreen = () => {
+  const { speak } = useSpeech();
+
   const [tasks, setTasks] = useState([
     { id: 1, title: 'Follow up with John Smith', priority: 'high', status: 'pending', dueDate: 'Today' },
     { id: 2, title: 'Prepare quote for Sarah Johnson', priority: 'medium', status: 'in_progress', dueDate: 'Tomorrow' },
@@ -125,6 +128,9 @@ const TasksScreen = () => {
     setOpenVoiceDialog(false);
     setTaskTitle('');
     setVoiceText('');
+
+    // Voice confirmation
+    speak(`Task created: ${newTask.title}`);
   };
 
   const handleCloseDialog = () => {
@@ -138,11 +144,21 @@ const TasksScreen = () => {
   };
 
   const toggleTaskComplete = (taskId) => {
-    setTasks(tasks.map(task =>
-      task.id === taskId
-        ? { ...task, status: task.status === 'completed' ? 'pending' : 'completed' }
-        : task
+    const task = tasks.find(t => t.id === taskId);
+    const newStatus = task.status === 'completed' ? 'pending' : 'completed';
+
+    setTasks(tasks.map(t =>
+      t.id === taskId
+        ? { ...t, status: newStatus }
+        : t
     ));
+
+    // Voice confirmation
+    if (newStatus === 'completed') {
+      speak('Task completed. Great job!');
+    } else {
+      speak('Task reopened');
+    }
   };
 
   return (

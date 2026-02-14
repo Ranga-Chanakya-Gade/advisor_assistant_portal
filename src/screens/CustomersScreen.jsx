@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import useSpeech from '../hooks/useSpeech';
 import {
   Container,
   Typography,
@@ -37,6 +38,8 @@ import {
 } from '@mui/icons-material';
 
 const CustomersScreen = () => {
+  const { speak } = useSpeech();
+
   const [customers, setCustomers] = useState([
     { id: 1, name: 'John Smith', status: 'Active', policies: 3, lastContact: '2 days ago', notes: [] },
     { id: 2, name: 'Sarah Johnson', status: 'Prospect', policies: 0, lastContact: '1 week ago', notes: [] },
@@ -143,6 +146,10 @@ const CustomersScreen = () => {
     setOpenVoiceDialog(false);
     setNoteText('');
     setVoiceText('');
+
+    // Voice confirmation
+    speak(`Note saved for ${selectedCustomer.name}`);
+
     setSelectedCustomer(null);
   };
 

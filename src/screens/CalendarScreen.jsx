@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import useSpeech from '../hooks/useSpeech';
 import {
   Container,
   Typography,
@@ -33,6 +34,8 @@ import {
 } from '@mui/icons-material';
 
 const CalendarScreen = () => {
+  const { speak } = useSpeech();
+
   const [appointments, setAppointments] = useState([
     { id: 1, time: '2:30 PM', title: 'Client Meeting - John Smith', type: 'in-person', duration: '30 min' },
     { id: 2, time: '4:00 PM', title: 'Policy Review - Sarah Johnson', type: 'video', duration: '45 min' },
@@ -137,6 +140,9 @@ const CalendarScreen = () => {
     setAppointmentTitle('');
     setAppointmentTime('');
     setVoiceText('');
+
+    // Voice confirmation
+    speak(`Appointment scheduled at ${appointmentTime}. ${appointmentTitle}`);
   };
 
   const handleCloseDialog = () => {

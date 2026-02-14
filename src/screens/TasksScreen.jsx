@@ -24,7 +24,7 @@ import {
 import { Add, CheckCircle, Schedule, Flag, Mic, MicOff, Close } from '@mui/icons-material';
 
 const TasksScreen = () => {
-  const { speak } = useSpeech();
+  const { speak, getRandomResponse } = useSpeech();
 
   const [tasks, setTasks] = useState([
     { id: 1, title: 'Follow up with John Smith', priority: 'high', status: 'pending', dueDate: 'Today' },
@@ -129,8 +129,15 @@ const TasksScreen = () => {
     setTaskTitle('');
     setVoiceText('');
 
-    // Voice confirmation
-    speak(`Task created: ${newTask.title}`);
+    // Voice confirmation - AI-like responses
+    const responses = [
+      `Got it! I've added "${newTask.title}" to your task list`,
+      `Perfect! I've created that task for you. It's marked as ${newTask.priority} priority`,
+      `All set! "${newTask.title}" has been added to your tasks`,
+      `Done! I've added that to your list and set it for ${newTask.dueDate}`,
+      `You got it! Task created and ready to go`
+    ];
+    speak(getRandomResponse(responses));
   };
 
   const handleCloseDialog = () => {
@@ -153,11 +160,24 @@ const TasksScreen = () => {
         : t
     ));
 
-    // Voice confirmation
+    // Voice confirmation - AI-like responses
     if (newStatus === 'completed') {
-      speak('Task completed. Great job!');
+      const remainingTasks = tasks.filter(t => t.status !== 'completed').length - 1;
+      const completionResponses = [
+        `Excellent work! Task completed. ${remainingTasks > 0 ? `You have ${remainingTasks} more to go` : "That's everything on your list!"}`,
+        `Great job! Checked that one off for you. Keep up the momentum!`,
+        `Nice! One more task done. You're making great progress today!`,
+        `Perfect! I've marked that as complete. You're on fire!`,
+        `Well done! Task completed successfully. ${remainingTasks > 0 ? `Just ${remainingTasks} more to go` : "You've completed all your tasks!"}`
+      ];
+      speak(getRandomResponse(completionResponses));
     } else {
-      speak('Task reopened');
+      const reopenResponses = [
+        'Okay, I've reopened that task for you',
+        'No problem, marked that as incomplete',
+        'Got it, that task is back on your list'
+      ];
+      speak(getRandomResponse(reopenResponses));
     }
   };
 

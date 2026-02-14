@@ -28,7 +28,7 @@ import {
 import useSpeech from '../hooks/useSpeech';
 
 const HomeScreen = ({ userData }) => {
-  const { speak, stop, isSpeaking, isEnabled, toggleEnabled } = useSpeech();
+  const { speak, stop, isSpeaking, isEnabled, toggleEnabled, getRandomResponse } = useSpeech();
   // Mock data - will be replaced with ServiceNow API
   const stats = {
     tasksToday: 12,
@@ -72,23 +72,61 @@ const HomeScreen = ({ userData }) => {
   // Speak welcome message on load
   useEffect(() => {
     if (isEnabled) {
-      const welcomeMessage = `Good morning ${userData.name.split(' ')[0]}. You have ${stats.tasksToday} tasks today, with ${stats.appointmentsToday} appointments scheduled.`;
+      const hour = new Date().getHours();
+      const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+      const firstName = userData.name.split(' ')[0];
+
+      const completionRate = Math.round((stats.tasksCompleted / stats.tasksToday) * 100);
+      let motivation = '';
+      if (completionRate >= 75) {
+        motivation = "You're crushing it today! ";
+      } else if (completionRate >= 50) {
+        motivation = "You're making great progress! ";
+      } else if (completionRate > 0) {
+        motivation = "Keep up the good work! ";
+      }
+
+      const urgentTasks = 4; // from mock data
+      const urgentNote = urgentTasks > 0 ? ` Just a heads up, you have ${urgentTasks} urgent items that need your attention.` : '';
+
+      const welcomeMessage = `${greeting} ${firstName}! ${motivation}You have ${stats.tasksToday} tasks on your plate today, and ${stats.appointmentsToday} appointments scheduled.${urgentNote} Let's make it a productive day!`;
+
       // Delay slightly to let page load
-      const timer = setTimeout(() => speak(welcomeMessage), 1000);
+      const timer = setTimeout(() => speak(welcomeMessage), 1500);
       return () => clearTimeout(timer);
     }
   }, []); // Only run once on mount
 
   // Speak AI insight
   const speakInsight = (insight) => {
-    const message = `${insight.title}. ${insight.message}`;
+    const intros = [
+      "Here's something important: ",
+      "I wanted to let you know: ",
+      "Quick heads up: ",
+      "This needs your attention: ",
+      "Don't forget: "
+    ];
+    const intro = getRandomResponse(intros);
+    const message = `${intro}${insight.message}. ${insight.action}?`;
     speak(message);
   };
 
   // Speak daily summary
   const speakDailySummary = () => {
     const completionRate = Math.round((stats.tasksCompleted / stats.tasksToday) * 100);
-    const summary = `Here's your daily summary. You've completed ${stats.tasksCompleted} of ${stats.tasksToday} tasks, that's ${completionRate} percent. You have ${stats.appointmentsToday} appointments today, ${stats.leadsActive} active leads, and ${stats.opportunitiesOpen} open opportunities.`;
+
+    let performance = '';
+    if (completionRate >= 80) {
+      performance = "Wow! You're absolutely crushing it today. ";
+    } else if (completionRate >= 60) {
+      performance = "Great job! You're doing really well. ";
+    } else if (completionRate >= 40) {
+      performance = "You're making solid progress. ";
+    } else {
+      performance = "Let's focus on getting these tasks done. ";
+    }
+
+    const summary = `Alright, here's your daily overview. ${performance}You've completed ${stats.tasksCompleted} out of ${stats.tasksToday} tasks, that's ${completionRate} percent done. Looking at your calendar, you have ${stats.appointmentsToday} appointments scheduled for today. On the sales side, you're managing ${stats.leadsActive} active leads and ${stats.opportunitiesOpen} open opportunities, with a pipeline value of four hundred and fifty thousand dollars. You've got this!`;
     speak(summary);
   };
 

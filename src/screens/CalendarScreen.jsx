@@ -34,7 +34,7 @@ import {
 } from '@mui/icons-material';
 
 const CalendarScreen = () => {
-  const { speak } = useSpeech();
+  const { speak, getRandomResponse } = useSpeech();
 
   const [appointments, setAppointments] = useState([
     { id: 1, time: '2:30 PM', title: 'Client Meeting - John Smith', type: 'in-person', duration: '30 min' },
@@ -141,8 +141,21 @@ const CalendarScreen = () => {
     setAppointmentTime('');
     setVoiceText('');
 
-    // Voice confirmation
-    speak(`Appointment scheduled at ${appointmentTime}. ${appointmentTitle}`);
+    // Voice confirmation - AI-like responses
+    const meetingType = appointmentType === 'video' ? 'video call' : 'in-person meeting';
+    const formattedTime = new Date(`2000-01-01T${appointmentTime}`).toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+
+    const responses = [
+      `Perfect! I've scheduled your ${meetingType} for ${formattedTime}. I'll send you a reminder 15 minutes before`,
+      `All set! Your ${appointmentDuration} minute ${meetingType} is booked for ${formattedTime}`,
+      `Great! I've added that to your calendar at ${formattedTime}. It's a ${meetingType}`,
+      `Done! Your appointment is confirmed for ${formattedTime}. Looking forward to it!`
+    ];
+    speak(getRandomResponse(responses));
   };
 
   const handleCloseDialog = () => {

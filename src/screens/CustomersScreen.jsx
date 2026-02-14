@@ -38,7 +38,7 @@ import {
 } from '@mui/icons-material';
 
 const CustomersScreen = () => {
-  const { speak } = useSpeech();
+  const { speak, getRandomResponse } = useSpeech();
 
   const [customers, setCustomers] = useState([
     { id: 1, name: 'John Smith', status: 'Active', policies: 3, lastContact: '2 days ago', notes: [] },
@@ -147,8 +147,18 @@ const CustomersScreen = () => {
     setNoteText('');
     setVoiceText('');
 
-    // Voice confirmation
-    speak(`Note saved for ${selectedCustomer.name}`);
+    // Voice confirmation - AI-like responses
+    const categoryText = noteCategory === 'follow-up' ? 'and marked for follow-up' : '';
+    const totalNotes = (selectedCustomer.notes || []).length + 1;
+
+    const responses = [
+      `Perfect! I've saved that note for ${selectedCustomer.name} ${categoryText}`,
+      `Got it! Note added to ${selectedCustomer.name}'s profile. That's ${totalNotes} notes total`,
+      `All set! I've logged that interaction with ${selectedCustomer.name}`,
+      `Done! Your note for ${selectedCustomer.name} has been saved ${categoryText}`,
+      `Excellent! I've updated ${selectedCustomer.name}'s record with that information`
+    ];
+    speak(getRandomResponse(responses));
 
     setSelectedCustomer(null);
   };

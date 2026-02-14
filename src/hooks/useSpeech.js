@@ -118,6 +118,13 @@ export const useSpeech = () => {
    */
   const isSupported = 'speechSynthesis' in window;
 
+  /**
+   * Get random item from array for varied responses
+   */
+  const getRandomResponse = (responses) => {
+    return responses[Math.floor(Math.random() * responses.length)];
+  };
+
   return {
     speak,
     stop,
@@ -129,7 +136,8 @@ export const useSpeech = () => {
     isSupported,
     voices,
     selectedVoice,
-    setSelectedVoice
+    setSelectedVoice,
+    getRandomResponse
   };
 };
 

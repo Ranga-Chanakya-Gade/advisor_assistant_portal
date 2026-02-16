@@ -1,9 +1,10 @@
 import React from 'react';
-import { Container, Typography, Box, Grid } from '@mui/material';
+import { Container, Typography, Box, Grid, Card, CardContent, Chip, Divider, alpha } from '@mui/material';
 import DataCard from '../../components/shared/DataCard';
 import InsightCard from '../../components/shared/InsightCard';
 import UseCaseCard from '../../components/shared/UseCaseCard';
-import { Event, CheckCircle, Description } from '@mui/icons-material';
+import AgentInteraction from '../../components/shared/AgentInteraction';
+import { Event, CheckCircle, Description, Person, Gavel, TrendingUp, Policy } from '@mui/icons-material';
 import { useMeetingPrep } from '../../contexts/MeetingPrepContext';
 
 // Color Palette
@@ -20,6 +21,134 @@ const colors = {
 
 const MeetingPrepScreen = () => {
   const { loading } = useMeetingPrep();
+
+  const handleAgentQuery = (query) => {
+    const lowerQuery = query.toLowerCase();
+
+    if (lowerQuery.includes('prepare') || lowerQuery.includes('sarah') || lowerQuery.includes('2pm')) {
+      return (
+        <Box>
+          <Typography variant="body1" sx={{ mb: 2, fontWeight: 600 }}>
+            Meeting Brief: Sarah Johnson (Tomorrow 2:00 PM)
+          </Typography>
+
+          <Grid container spacing={2} sx={{ mb: 2 }}>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ bgcolor: alpha(colors.orange, 0.05) }}>
+                <CardContent>
+                  <Typography variant="caption" color="text.secondary">Active Policies</Typography>
+                  <Typography variant="h6" fontWeight={700}>3 Policies</Typography>
+                  <Typography variant="caption">$800K total coverage</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ bgcolor: alpha(colors.blue, 0.05) }}>
+                <CardContent>
+                  <Typography variant="caption" color="text.secondary">Last Contact</Typography>
+                  <Typography variant="h6" fontWeight={700}>45 days ago</Typography>
+                  <Typography variant="caption">Phone call</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <Card sx={{ bgcolor: alpha(colors.yellow, 0.1), border: `2px solid ${colors.yellow}` }}>
+                <CardContent>
+                  <Typography variant="caption" color="text.secondary">Milestone Alert</Typography>
+                  <Typography variant="h6" fontWeight={700}>Birthday</Typography>
+                  <Typography variant="caption">Next month • Age 35</Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          <Box sx={{ p: 2, bgcolor: alpha(colors.lightBlue, 0.05), borderRadius: 2, mb: 2 }}>
+            <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
+              Recent Life Event Detected
+            </Typography>
+            <Typography variant="body2">
+              • Home purchase identified (address change in system)<br />
+              • Property value: $650,000<br />
+              • Current mortgage protection: Adequate
+            </Typography>
+          </Box>
+
+          <Box sx={{ p: 2, bgcolor: alpha(colors.green, 0.05), borderRadius: 2 }}>
+            <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
+              Conversation Priorities
+            </Typography>
+            <Typography variant="body2">
+              1. Congratulate on new home purchase<br />
+              2. Discuss increased asset protection needs<br />
+              3. Review beneficiary designations (last update 2 years ago)<br />
+              4. Mention upcoming birthday milestone
+            </Typography>
+          </Box>
+        </Box>
+      );
+    }
+
+    if (lowerQuery.includes('john') || lowerQuery.includes('discuss')) {
+      return (
+        <Box>
+          <Typography variant="body1" sx={{ mb: 2, fontWeight: 600 }}>
+            Strategic Conversation Guide: John Smith
+          </Typography>
+
+          <Box sx={{ p: 2, bgcolor: alpha(colors.orange, 0.1), borderRadius: 2, mb: 2, border: `2px solid ${colors.orange}` }}>
+            <Typography variant="subtitle2" fontWeight={600} color="error" sx={{ mb: 1 }}>
+              ⚠️ Urgent: Policy Anniversary Approaching
+            </Typography>
+            <Typography variant="body2">
+              • Term life policy expires in 6 months<br />
+              • Conversion deadline: 120 days<br />
+              • No conversion = lose coverage
+            </Typography>
+          </Box>
+
+          <Grid container spacing={2} sx={{ mb: 2 }}>
+            <Grid item xs={12} md={6}>
+              <Card sx={{ bgcolor: alpha(colors.red, 0.05) }}>
+                <CardContent>
+                  <Typography variant="subtitle2" gutterBottom>Coverage Gap Identified</Typography>
+                  <Typography variant="body2">
+                    Current Policy: $350,000<br />
+                    Current Mortgage: $425,000<br />
+                    <strong>Gap: $75,000</strong>
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Card sx={{ bgcolor: alpha(colors.yellow, 0.05) }}>
+                <CardContent>
+                  <Typography variant="subtitle2" gutterBottom>Competitor Activity</Typography>
+                  <Typography variant="body2">
+                    CRM notes indicate client received quote from competitor last month
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+
+          <Box sx={{ p: 2, bgcolor: alpha(colors.green, 0.05), borderRadius: 2 }}>
+            <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
+              Recommended Opening
+            </Typography>
+            <Typography variant="body2" fontStyle="italic">
+              "John, I wanted to reach out because your policy anniversary is coming up, and I've been thinking about your family's protection. I noticed your mortgage has grown since we last talked, and I want to make sure your family's home is fully secured..."
+            </Typography>
+          </Box>
+        </Box>
+      );
+    }
+
+    return (
+      <Typography>
+        I can help you prepare for meetings, create conversation guides, and surface relevant client context. Try asking about specific clients or upcoming meetings.
+      </Typography>
+    );
+  };
 
   return (
     <Container maxWidth="lg" sx={{ pb: 4, pt: 3 }}>
@@ -71,6 +200,29 @@ const MeetingPrepScreen = () => {
           />
         </Grid>
       </Grid>
+
+      {/* Interactive Agent Demo */}
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h6"
+          sx={{ fontFamily: 'Roboto Slab, serif', fontWeight: 600, mb: 1 }}
+        >
+          Try It: Ask Your Agent
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          Get instant meeting preparation and conversation guides
+        </Typography>
+        <AgentInteraction
+          suggestedQueries={[
+            "Prepare for my 2pm meeting with Sarah",
+            "What should I discuss with John Smith?",
+          ]}
+          onQuery={handleAgentQuery}
+          placeholder="Ask about meeting preparation or specific clients..."
+        />
+      </Box>
+
+      <Divider sx={{ my: 4 }} />
 
       {/* Agent Use Cases */}
       <Box sx={{ mb: 4 }}>

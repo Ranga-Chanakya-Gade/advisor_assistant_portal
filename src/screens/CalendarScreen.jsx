@@ -154,7 +154,7 @@ const CalendarScreen = () => {
     setAppointmentTime('');
     setVoiceText('');
 
-    // Voice confirmation - AI-like responses
+    // Voice confirmation - conversational responses
     const meetingType = appointmentType === 'video' ? 'video call' : 'in-person meeting';
     const formattedTime = new Date(`2000-01-01T${appointmentTime}`).toLocaleTimeString('en-US', {
       hour: 'numeric',

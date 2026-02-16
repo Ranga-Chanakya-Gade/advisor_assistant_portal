@@ -160,7 +160,7 @@ const CustomersScreen = () => {
     setNoteText('');
     setVoiceText('');
 
-    // Voice confirmation - AI-like responses
+    // Voice confirmation - conversational responses
     const categoryText = noteCategory === 'follow-up' ? 'and marked for follow-up' : '';
     const totalNotes = (selectedCustomer.notes || []).length + 1;
 

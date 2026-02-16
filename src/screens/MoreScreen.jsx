@@ -12,6 +12,7 @@ import {
   Box,
   Chip,
   alpha,
+  Grid,
 } from '@mui/material';
 import {
   Person,
@@ -21,6 +22,13 @@ import {
   Logout,
   Assessment,
   Stars,
+  ShowChart,
+  Timeline,
+  Campaign,
+  Event,
+  Gavel,
+  Psychology,
+  BusinessCenter,
 } from '@mui/icons-material';
 
 // Color Palette
@@ -35,7 +43,67 @@ const colors = {
   paleAqua: '#F2F7F6',
 };
 
-const MoreScreen = ({ userData, onNavigateToDemo }) => {
+const MoreScreen = ({ userData, onNavigateToDemo, onNavigateToModule }) => {
+  // Enterprise modules
+  const enterpriseModules = [
+    {
+      id: 'engagement',
+      icon: Stars,
+      title: 'Personalized Engagement',
+      description: 'Agent-driven customer outreach',
+      color: colors.lightBlue,
+      badge: 'Featured'
+    },
+    {
+      id: 'illustration',
+      icon: ShowChart,
+      title: 'Income Planning',
+      description: 'Guided illustration & projections',
+      color: colors.green,
+      badge: null
+    },
+    {
+      id: 'lifestage',
+      icon: Timeline,
+      title: 'Life-Stage Intelligence',
+      description: 'Milestone tracking & retention',
+      color: colors.blue,
+      badge: null
+    },
+    {
+      id: 'meetingprep',
+      icon: Event,
+      title: 'Meeting Preparation',
+      description: 'Pre-meeting intelligence hub',
+      color: colors.orange,
+      badge: null
+    },
+    {
+      id: 'automation',
+      icon: Gavel,
+      title: 'Compliance & Automation',
+      description: 'Document assembly & audit',
+      color: colors.red,
+      badge: null
+    },
+    {
+      id: 'predictive',
+      icon: Psychology,
+      title: 'Predictive Insights',
+      description: 'Risk & retention analytics',
+      color: colors.lightGreen,
+      badge: null
+    },
+    {
+      id: 'enterprise',
+      icon: BusinessCenter,
+      title: 'Enterprise Intelligence',
+      description: 'Cross-functional analytics',
+      color: colors.yellow,
+      badge: 'Advanced'
+    },
+  ];
+
   const menuItems = [
     { icon: <Person />, text: 'Profile', subtitle: userData.role, color: colors.blue },
     { icon: <Assessment />, text: 'Reports & Analytics', color: colors.green },
@@ -45,88 +113,138 @@ const MoreScreen = ({ userData, onNavigateToDemo }) => {
   ];
 
   return (
-    <Container maxWidth="md" sx={{ pb: 10, pt: 3 }}>
+    <Container maxWidth="lg" sx={{ pb: 10, pt: 3 }}>
       <Typography
         variant="h4"
         sx={{
           fontFamily: 'Roboto Slab, serif',
           fontWeight: 700,
-          mb: 3,
+          mb: 1,
           background: `linear-gradient(135deg, ${colors.blue} 0%, ${colors.lightBlue} 100%)`,
           backgroundClip: 'text',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
         }}
       >
-        More Options
+        Enterprise Modules
+      </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+        Comprehensive intelligence platform for insurance professionals
       </Typography>
 
-      {/* Smart Engagement Feature Card */}
-      <Card
-        sx={{
-          mb: 3,
-          background: `linear-gradient(135deg, ${colors.blue} 0%, ${colors.lightBlue} 100%)`,
-          color: 'white',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          position: 'relative',
-          overflow: 'hidden',
-          border: `3px solid ${colors.lightBlue}`,
-          boxShadow: `0 6px 20px ${alpha(colors.lightBlue, 0.4)}`,
-          '&:hover': {
-            transform: 'translateY(-6px)',
-            boxShadow: `0 10px 32px ${alpha(colors.lightBlue, 0.5)}`,
-          },
-        }}
-        onClick={onNavigateToDemo}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: -50,
-            right: -50,
-            width: 150,
-            height: 150,
-            borderRadius: '50%',
-            background: alpha('#FFFFFF', 0.1),
-          }}
-        />
-        <CardContent sx={{ p: 3, position: 'relative', zIndex: 1 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box
+      {/* Enterprise Module Cards Grid */}
+      <Grid container spacing={2} sx={{ mb: 4 }}>
+        {enterpriseModules.map((module) => (
+          <Grid item xs={12} sm={6} md={4} key={module.id}>
+            <Card
               sx={{
-                width: 56,
-                height: 56,
-                borderRadius: 3,
-                bgcolor: alpha('#FFFFFF', 0.25),
+                height: '100%',
+                minHeight: 180,
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mr: 2,
+                flexDirection: 'column',
+                background: `linear-gradient(135deg, ${alpha(module.color, 0.95)} 0%, ${alpha(module.color, 0.85)} 100%)`,
+                color: 'white',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                position: 'relative',
+                overflow: 'hidden',
+                border: `3px solid ${module.color}`,
+                boxShadow: `0 4px 16px ${alpha(module.color, 0.3)}`,
+                '&:hover': {
+                  transform: 'translateY(-6px)',
+                  boxShadow: `0 8px 28px ${alpha(module.color, 0.45)}`,
+                },
+              }}
+              onClick={() => {
+                if (module.id === 'engagement') {
+                  onNavigateToDemo();
+                } else if (onNavigateToModule) {
+                  onNavigateToModule(module.id);
+                }
               }}
             >
-              <Stars sx={{ fontSize: 32 }} />
-            </Box>
-            <Box sx={{ flex: 1 }}>
-              <Typography variant="h5" sx={{ fontFamily: 'Roboto Slab, serif', fontWeight: 700, mb: 0.5 }}>
-                Smart Engagement
-              </Typography>
-              <Typography variant="body2" sx={{ opacity: 0.95, fontSize: '0.9375rem' }}>
-                AI-powered customer outreach assistant
-              </Typography>
-            </Box>
-            <Chip
-              label="Featured"
-              sx={{
-                bgcolor: colors.yellow,
-                color: '#333',
-                fontWeight: 700,
-                fontSize: '0.75rem',
-              }}
-            />
-          </Box>
-        </CardContent>
-      </Card>
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: -30,
+                  right: -30,
+                  width: 100,
+                  height: 100,
+                  borderRadius: '50%',
+                  background: alpha('#FFFFFF', 0.15),
+                }}
+              />
+              <CardContent sx={{ p: 3, position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', flex: 1 }}>
+                {/* Icon and Badge Row */}
+                <Box sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  mb: 2,
+                  minHeight: 48
+                }}>
+                  <Box
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      borderRadius: 2,
+                      bgcolor: alpha('#FFFFFF', 0.25),
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <module.icon sx={{ fontSize: 28 }} />
+                  </Box>
+                  {module.badge && (
+                    <Chip
+                      label={module.badge}
+                      size="small"
+                      sx={{
+                        bgcolor: colors.yellow,
+                        color: '#333',
+                        fontWeight: 700,
+                        fontSize: '0.7rem',
+                        height: 24,
+                        ml: 1,
+                      }}
+                    />
+                  )}
+                </Box>
+
+                {/* Title and Description */}
+                <Box sx={{ flex: 1 }}>
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      fontFamily: 'Roboto Slab, serif',
+                      fontWeight: 700,
+                      mb: 1,
+                      fontSize: '1.1rem',
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {module.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      opacity: 0.95,
+                      fontSize: '0.875rem',
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {module.description}
+                  </Typography>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      <Divider sx={{ my: 4 }} />
 
       {/* Menu Items */}
       <Card sx={{ background: colors.paleAqua, border: `2px solid ${alpha(colors.lightBlue, 0.3)}` }}>

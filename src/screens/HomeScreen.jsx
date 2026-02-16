@@ -72,7 +72,7 @@ const HomeScreen = ({ userData }) => {
       icon: <TrendingUp />,
       iconColor: colors.green,
       bgGradient: `linear-gradient(135deg, ${alpha(colors.green, 0.1)} 0%, ${alpha(colors.green, 0.05)} 100%)`,
-      title: 'Smart Recommendation',
+      title: 'Personalized Recommendation',
       message: 'Sarah Johnson qualifies for life insurance upgrade based on recent life event',
       action: 'Create Opportunity'
     },
@@ -463,16 +463,16 @@ const HomeScreen = ({ userData }) => {
           </Grid>
         </Grid>
 
-        {/* AI Insights */}
+        {/* Proactive Insights */}
         <Box sx={{ mb: 4 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Lightbulb sx={{ color: colors.orange, fontSize: 28, mr: 1 }} />
               <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                AI Insights
+                Proactive Insights
               </Typography>
               <Chip
-                label="Powered by AI"
+                label="Agent-Driven"
                 size="small"
                 sx={{
                   ml: 1.5,

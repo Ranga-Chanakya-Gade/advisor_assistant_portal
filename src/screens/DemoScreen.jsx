@@ -130,7 +130,7 @@ const DemoScreen = () => {
                 Customer Milestone Alert
               </Typography>
               <Typography variant="caption" sx={{ opacity: 0.9, display: 'block' }}>
-                AI-Powered Engagement Opportunity
+                Proactive Engagement Opportunity
               </Typography>
             </Box>
           </Box>
@@ -448,13 +448,13 @@ const DemoScreen = () => {
                   Age-Based Engagement Insights
                 </Typography>
                 <Typography variant="body2" sx={{ opacity: 0.95 }}>
-                  AI-powered behavioral analysis
+                  Agent-driven behavioral analysis
                 </Typography>
               </Box>
             </Box>
             <Chip
               icon={<AutoAwesome sx={{ color: 'white !important' }} />}
-              label="AI Insight"
+              label="Proactive Insight"
               sx={{
                 bgcolor: alpha('#FFFFFF', 0.25),
                 color: 'white',
@@ -555,7 +555,7 @@ const DemoScreen = () => {
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                   <Verified sx={{ mr: 1.5, fontSize: 32 }} />
                   <Typography variant="h6" fontWeight={700}>
-                    AI Confidence Score
+                    Confidence Score
                   </Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -621,10 +621,10 @@ const DemoScreen = () => {
             </Box>
             <Box>
               <Typography variant="h5" sx={{ fontFamily: 'Roboto Slab, serif', fontWeight: 700 }}>
-                Smart Outreach Strategy
+                Personalized Outreach Strategy
               </Typography>
               <Typography variant="body2" sx={{ opacity: 0.95 }}>
-                AI-recommended multi-channel approach
+                Agent-recommended multi-channel approach
               </Typography>
             </Box>
           </Box>
@@ -783,7 +783,7 @@ const DemoScreen = () => {
                   Personalized Message
                 </Typography>
                 <Typography variant="body2" sx={{ opacity: 0.95 }}>
-                  AI-generated, compliance-approved
+                  Agent-generated, compliance-approved
                 </Typography>
               </Box>
             </Box>
@@ -925,7 +925,7 @@ Senior Advisor`}
                   Automated Follow-Up
                 </Typography>
                 <Typography variant="body2" sx={{ opacity: 0.95 }}>
-                  Smart task scheduling complete
+                  Automated task scheduling complete
                 </Typography>
               </Box>
             </Box>
@@ -1120,14 +1120,14 @@ Senior Advisor`}
               mb: 1,
             }}
           >
-            Smart Customer Engagement
+            Personalized Customer Engagement
           </Typography>
           <Typography variant="h5" color="text.secondary" gutterBottom fontWeight={600}>
-            AI-Powered Birthday Outreach
+            Proactive Birthday Outreach
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 700, mx: 'auto', fontSize: '1.1rem' }}>
-            Your AI assistant analyzes customer preferences and creates personalized engagement
-            strategies automatically
+            Your personal agent surfaces relevant context and creates personalized engagement
+            strategies based on what matters most to each customer
           </Typography>
         </Box>
 

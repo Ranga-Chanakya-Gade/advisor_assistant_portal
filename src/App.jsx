@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import {
   ThemeProvider,
   createTheme,
@@ -13,7 +13,8 @@ import {
   Badge,
   Typography,
   Fab,
-  alpha
+  alpha,
+  CircularProgress
 } from '@mui/material';
 import {
   Home as HomeIcon,
@@ -36,6 +37,21 @@ import DemoScreen from './screens/DemoScreen';
 
 // Import voice commands
 import useVoiceCommands from './hooks/useVoiceCommands';
+
+// Import Context Providers
+import { CustomerIntelligenceProvider } from './contexts/CustomerIntelligenceContext';
+import { IllustrationProvider } from './contexts/IllustrationContext';
+import { MeetingPrepProvider } from './contexts/MeetingPrepContext';
+import { ComplianceProvider } from './contexts/ComplianceContext';
+import { PredictiveAnalyticsProvider } from './contexts/PredictiveAnalyticsContext';
+
+// Lazy load module screens
+const IllustrationScreen = lazy(() => import('./screens/modules/IllustrationScreen'));
+const LifeStageScreen = lazy(() => import('./screens/modules/LifeStageScreen'));
+const MeetingPrepScreen = lazy(() => import('./screens/modules/MeetingPrepScreen'));
+const AutomationScreen = lazy(() => import('./screens/modules/AutomationScreen'));
+const PredictiveScreen = lazy(() => import('./screens/modules/PredictiveScreen'));
+const EnterpriseScreen = lazy(() => import('./screens/modules/EnterpriseScreen'));
 
 // Vibrant color palette
 const colors = {
@@ -157,6 +173,7 @@ function App() {
   const [activeScreen, setActiveScreen] = useState(0);
   const [notificationCount, setNotificationCount] = useState(3);
   const [showDemo, setShowDemo] = useState(false);
+  const [activeModule, setActiveModule] = useState(null);
   const homeScreenRef = useRef(null);
   const tasksScreenRef = useRef(null);
   const calendarScreenRef = useRef(null);
@@ -176,14 +193,33 @@ function App() {
     { label: 'More', icon: MoreIcon, component: MoreScreen },
   ];
 
+  const modules = {
+    illustration: { component: IllustrationScreen, title: 'Income Planning' },
+    lifestage: { component: LifeStageScreen, title: 'Life-Stage Intelligence' },
+    meetingprep: { component: MeetingPrepScreen, title: 'Meeting Preparation' },
+    automation: { component: AutomationScreen, title: 'Compliance & Automation' },
+    predictive: { component: PredictiveScreen, title: 'Predictive Insights' },
+    enterprise: { component: EnterpriseScreen, title: 'Enterprise Intelligence' },
+  };
+
   const ActiveScreenComponent = screens[activeScreen].component;
 
   const handleNavigateToDemo = () => {
     setShowDemo(true);
+    setActiveModule(null);
   };
 
   const handleBackFromDemo = () => {
     setShowDemo(false);
+  };
+
+  const handleNavigateToModule = (moduleId) => {
+    setActiveModule(moduleId);
+    setShowDemo(false);
+  };
+
+  const handleBackFromModule = () => {
+    setActiveModule(null);
   };
 
   // Handle voice commands
@@ -226,6 +262,10 @@ function App() {
         setActiveScreen(command.screen);
         break;
 
+      case 'OPEN_MODULE':
+        handleNavigateToModule(command.module);
+        break;
+
       default:
         console.log('Unknown command type:', command.type);
     }
@@ -245,76 +285,97 @@ function App() {
     speakAndListen(greeting, 100);
   };
 
-  return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Box sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        overflow: 'hidden',
-        paddingTop: 'env(safe-area-inset-top)',
-        paddingBottom: 'env(safe-area-inset-bottom)',
-      }}>
-        {/* Top App Bar */}
-        <AppBar
-          position="static"
-          elevation={0}
-          sx={{
-            background: 'linear-gradient(135deg, #FFFFFF 0%, #F2F7F6 100%)',
-            color: 'text.primary',
-            borderBottom: `3px solid ${colors.lightBlue}`,
-          }}
-        >
-          <Toolbar>
-            {showDemo && (
-              <IconButton onClick={handleBackFromDemo} sx={{ mr: 1 }}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </IconButton>
-            )}
-            <Box sx={{ flexGrow: 1 }}>
-              <Typography variant="h6" fontWeight="bold">
-                {showDemo ? 'Smart Engagement' : screens[activeScreen].label}
-              </Typography>
-              {activeScreen === 0 && !showDemo && (
-                <Typography variant="caption" color="text.secondary">
-                  Good morning, {userData.name.split(' ')[0]}
-                </Typography>
-              )}
-            </Box>
-            {!showDemo && (
-              <>
-                <IconButton>
-                  <SearchIcon />
-                </IconButton>
-                <IconButton>
-                  <Badge badgeContent={notificationCount} color="error">
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-              </>
-            )}
-          </Toolbar>
-        </AppBar>
+  // Get current screen title
+  const getCurrentTitle = () => {
+    if (showDemo) return 'Personalized Engagement';
+    if (activeModule) return modules[activeModule]?.title || 'Module';
+    return screens[activeScreen].label;
+  };
 
-        {/* Main Content Area */}
-        <Box sx={{
-          flex: 1,
-          overflow: 'auto',
-          background: `linear-gradient(180deg, ${colors.paleAqua} 0%, ${alpha(colors.lightBlue, 0.1)} 100%)`,
-          position: 'relative'
-        }}>
-          {showDemo ? (
-            <DemoScreen />
-          ) : (
-            <ActiveScreenComponent
-              userData={userData}
-              onNavigateToDemo={handleNavigateToDemo}
-            />
-          )}
-        </Box>
+  return (
+    <CustomerIntelligenceProvider>
+      <IllustrationProvider>
+        <MeetingPrepProvider>
+          <ComplianceProvider>
+            <PredictiveAnalyticsProvider>
+              <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100vh',
+                  overflow: 'hidden',
+                  paddingTop: 'env(safe-area-inset-top)',
+                  paddingBottom: 'env(safe-area-inset-bottom)',
+                }}>
+                  {/* Top App Bar */}
+                  <AppBar
+                    position="static"
+                    elevation={0}
+                    sx={{
+                      background: 'linear-gradient(135deg, #FFFFFF 0%, #F2F7F6 100%)',
+                      color: 'text.primary',
+                      borderBottom: `3px solid ${colors.lightBlue}`,
+                    }}
+                  >
+                    <Toolbar>
+                      {(showDemo || activeModule) && (
+                        <IconButton onClick={showDemo ? handleBackFromDemo : handleBackFromModule} sx={{ mr: 1 }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                            <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </IconButton>
+                      )}
+                      <Box sx={{ flexGrow: 1 }}>
+                        <Typography variant="h6" fontWeight="bold">
+                          {getCurrentTitle()}
+                        </Typography>
+                        {activeScreen === 0 && !showDemo && !activeModule && (
+                          <Typography variant="caption" color="text.secondary">
+                            Good morning, {userData.name.split(' ')[0]}
+                          </Typography>
+                        )}
+                      </Box>
+                      {!showDemo && !activeModule && (
+                        <>
+                          <IconButton>
+                            <SearchIcon />
+                          </IconButton>
+                          <IconButton>
+                            <Badge badgeContent={notificationCount} color="error">
+                              <NotificationsIcon />
+                            </Badge>
+                          </IconButton>
+                        </>
+                      )}
+                    </Toolbar>
+                  </AppBar>
+
+                  {/* Main Content Area */}
+                  <Box sx={{
+                    flex: 1,
+                    overflow: 'auto',
+                    background: `linear-gradient(180deg, ${colors.paleAqua} 0%, ${alpha(colors.lightBlue, 0.1)} 100%)`,
+                    position: 'relative'
+                  }}>
+                    {showDemo ? (
+                      <DemoScreen />
+                    ) : activeModule ? (
+                      <Suspense fallback={
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                          <CircularProgress />
+                        </Box>
+                      }>
+                        {React.createElement(modules[activeModule].component)}
+                      </Suspense>
+                    ) : (
+                      <ActiveScreenComponent
+                        userData={userData}
+                        onNavigateToDemo={handleNavigateToDemo}
+                        onNavigateToModule={handleNavigateToModule}
+                      />
+                    )}
+                  </Box>
 
         {/* Voice Assistant FAB */}
         <Fab
@@ -351,35 +412,40 @@ function App() {
           <VoiceIcon />
         </Fab>
 
-        {/* Bottom Navigation */}
-        {!showDemo && (
-          <Paper
-            sx={{
-              position: 'fixed',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              zIndex: 1000
-            }}
-            elevation={3}
-          >
-            <BottomNavigation
-              value={activeScreen}
-              onChange={(event, newValue) => setActiveScreen(newValue)}
-              showLabels
-            >
-              {screens.map((screen, index) => (
-                <BottomNavigationAction
-                  key={index}
-                  label={screen.label}
-                  icon={<screen.icon />}
-                />
-              ))}
-            </BottomNavigation>
-          </Paper>
-        )}
-      </Box>
-    </ThemeProvider>
+                  {/* Bottom Navigation */}
+                  {!showDemo && !activeModule && (
+                    <Paper
+                      sx={{
+                        position: 'fixed',
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        zIndex: 1000
+                      }}
+                      elevation={3}
+                    >
+                      <BottomNavigation
+                        value={activeScreen}
+                        onChange={(event, newValue) => setActiveScreen(newValue)}
+                        showLabels
+                      >
+                        {screens.map((screen, index) => (
+                          <BottomNavigationAction
+                            key={index}
+                            label={screen.label}
+                            icon={<screen.icon />}
+                          />
+                        ))}
+                      </BottomNavigation>
+                    </Paper>
+                  )}
+                </Box>
+              </ThemeProvider>
+            </PredictiveAnalyticsProvider>
+          </ComplianceProvider>
+        </MeetingPrepProvider>
+      </IllustrationProvider>
+    </CustomerIntelligenceProvider>
   );
 }
 

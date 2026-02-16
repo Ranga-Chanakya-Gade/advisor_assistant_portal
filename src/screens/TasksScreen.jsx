@@ -142,7 +142,7 @@ const TasksScreen = () => {
     setTaskTitle('');
     setVoiceText('');
 
-    // Voice confirmation - AI-like responses
+    // Voice confirmation - conversational responses
     const responses = [
       `Got it! I've added "${newTask.title}" to your task list`,
       `Perfect! I've created that task for you. It's marked as ${newTask.priority} priority`,
@@ -173,7 +173,7 @@ const TasksScreen = () => {
         : t
     ));
 
-    // Voice confirmation - AI-like responses
+    // Voice confirmation - conversational responses
     if (newStatus === 'completed') {
       const remainingTasks = tasks.filter(t => t.status !== 'completed').length - 1;
       const completionResponses = [

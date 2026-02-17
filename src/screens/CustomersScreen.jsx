@@ -24,7 +24,8 @@ import {
   Divider,
   List,
   ListItem,
-  ListItemText
+  ListItemText,
+  alpha
 } from '@mui/material';
 import {
   Phone,
@@ -37,12 +38,23 @@ import {
   StickyNote2
 } from '@mui/icons-material';
 
+// Color Palette
+const colors = {
+  orange: '#F6921E',
+  yellow: '#E8DE23',
+  lightGreen: '#8BC53F',
+  green: '#37A526',
+  lightBlue: '#00ADEE',
+  blue: '#1B75BB',
+  red: '#D02E2E',
+  paleAqua: '#F2F7F6',
+};
+
 const CustomersScreen = () => {
   const { speak, getRandomResponse } = useSpeech();
 
   const [customers, setCustomers] = useState([
     { id: 1, name: 'John Smith', status: 'Active', policies: 3, lastContact: '2 days ago', notes: [] },
-    { id: 2, name: 'Sarah Johnson', status: 'Prospect', policies: 0, lastContact: '1 week ago', notes: [] },
     { id: 3, name: 'Michael Chen', status: 'Active', policies: 2, lastContact: 'Today', notes: [] },
   ]);
 
@@ -147,7 +159,7 @@ const CustomersScreen = () => {
     setNoteText('');
     setVoiceText('');
 
-    // Voice confirmation - AI-like responses
+    // Voice confirmation - conversational responses
     const categoryText = noteCategory === 'follow-up' ? 'and marked for follow-up' : '';
     const totalNotes = (selectedCustomer.notes || []).length + 1;
 
@@ -175,33 +187,122 @@ const CustomersScreen = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ pb: 10, pt: 2 }}>
-      <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>Customers</Typography>
+    <Container maxWidth="lg" sx={{ pb: 10, pt: 3 }}>
+      <Typography
+        variant="h4"
+        sx={{
+          fontFamily: 'Roboto Slab, serif',
+          fontWeight: 700,
+          color: colors.blue,
+          mb: 3
+        }}
+      >
+        Customers
+      </Typography>
 
       {customers.map(customer => (
-        <Card key={customer.id} sx={{ mb: 2 }}>
-          <CardContent>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
+        <Card
+          elevation={0}
+          key={customer.id}
+          sx={{
+            mb: 2.5,
+            borderRadius: 3,
+            border: `1px solid ${alpha(colors.blue, 0.1)}`,
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: `0 4px 12px ${alpha(colors.lightBlue, 0.15)}`
+            }
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2.5 }}>
+              <Avatar
+                sx={{
+                  mr: 2.5,
+                  width: 56,
+                  height: 56,
+                  bgcolor: colors.lightBlue,
+                  fontSize: '1.5rem',
+                  fontWeight: 600
+                }}
+              >
                 {customer.name.charAt(0)}
               </Avatar>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="subtitle1" fontWeight="600">{customer.name}</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {customer.policies} policies • Last contact: {customer.lastContact}
+                <Typography variant="h6" fontWeight="600" sx={{ mb: 0.5 }}>
+                  {customer.name}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {customer.policies} {customer.policies === 1 ? 'policy' : 'policies'} • Last contact: {customer.lastContact}
                 </Typography>
               </Box>
-              <Chip label={customer.status} size="small" color={customer.status === 'Active' ? 'success' : 'warning'} />
+              <Chip
+                label={customer.status}
+                size="medium"
+                sx={{
+                  fontWeight: 600,
+                  bgcolor: customer.status === 'Active'
+                    ? alpha(colors.green, 0.15)
+                    : alpha(colors.orange, 0.15),
+                  color: customer.status === 'Active' ? colors.green : colors.orange,
+                  border: 'none'
+                }}
+              />
             </Box>
-            <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-              <IconButton size="small" color="primary"><Phone /></IconButton>
-              <IconButton size="small" color="primary"><Message /></IconButton>
-              <IconButton size="small" color="primary"><Event /></IconButton>
+
+            <Box sx={{ display: 'flex', gap: 1.5, mt: 2.5 }}>
               <IconButton
-                size="small"
-                color="secondary"
+                size="medium"
+                sx={{
+                  bgcolor: alpha(colors.lightBlue, 0.1),
+                  color: colors.lightBlue,
+                  borderRadius: 2,
+                  '&:hover': {
+                    bgcolor: alpha(colors.lightBlue, 0.2)
+                  }
+                }}
+              >
+                <Phone />
+              </IconButton>
+              <IconButton
+                size="medium"
+                sx={{
+                  bgcolor: alpha(colors.green, 0.1),
+                  color: colors.green,
+                  borderRadius: 2,
+                  '&:hover': {
+                    bgcolor: alpha(colors.green, 0.2)
+                  }
+                }}
+              >
+                <Message />
+              </IconButton>
+              <IconButton
+                size="medium"
+                sx={{
+                  bgcolor: alpha(colors.orange, 0.1),
+                  color: colors.orange,
+                  borderRadius: 2,
+                  '&:hover': {
+                    bgcolor: alpha(colors.orange, 0.2)
+                  }
+                }}
+              >
+                <Event />
+              </IconButton>
+              <IconButton
+                size="medium"
                 onClick={() => handleAddNote(customer)}
-                sx={{ ml: 'auto' }}
+                sx={{
+                  ml: 'auto',
+                  bgcolor: alpha(colors.blue, 0.1),
+                  color: colors.blue,
+                  borderRadius: 2,
+                  '&:hover': {
+                    bgcolor: alpha(colors.blue, 0.2)
+                  }
+                }}
               >
                 <NoteAdd />
               </IconButton>
@@ -209,16 +310,34 @@ const CustomersScreen = () => {
 
             {/* Show recent notes if any */}
             {customer.notes && customer.notes.length > 0 && (
-              <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
-                <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <StickyNote2 sx={{ fontSize: 14, mr: 0.5 }} />
+              <Box
+                sx={{
+                  mt: 2.5,
+                  pt: 2.5,
+                  borderTop: `1px solid ${alpha(colors.blue, 0.1)}`
+                }}
+              >
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight={600}
+                  sx={{ display: 'flex', alignItems: 'center', mb: 1.5 }}
+                >
+                  <StickyNote2 sx={{ fontSize: 16, mr: 0.5, color: colors.orange }} />
                   Recent Notes ({customer.notes.length})
                 </Typography>
-                <Box sx={{ bgcolor: '#f5f5f5', borderRadius: 1, p: 1 }}>
-                  <Typography variant="caption" sx={{ display: 'block' }}>
+                <Box
+                  sx={{
+                    bgcolor: alpha(colors.paleAqua, 0.5),
+                    borderRadius: 2,
+                    p: 2,
+                    border: `1px solid ${alpha(colors.blue, 0.08)}`
+                  }}
+                >
+                  <Typography variant="body2" sx={{ display: 'block', mb: 1 }}>
                     {customer.notes[0].text}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
                     {customer.notes[0].timestamp}
                   </Typography>
                 </Box>

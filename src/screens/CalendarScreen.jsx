@@ -21,7 +21,8 @@ import {
   Alert,
   CircularProgress,
   ToggleButtonGroup,
-  ToggleButton
+  ToggleButton,
+  alpha
 } from '@mui/material';
 import {
   Event,
@@ -33,13 +34,37 @@ import {
   Close
 } from '@mui/icons-material';
 
+// Color Palette
+const colors = {
+  orange: '#F6921E',
+  yellow: '#E8DE23',
+  lightGreen: '#8BC53F',
+  green: '#37A526',
+  lightBlue: '#00ADEE',
+  blue: '#1B75BB',
+  red: '#D02E2E',
+  paleAqua: '#F2F7F6',
+};
+
 const CalendarScreen = () => {
   const { speak, getRandomResponse } = useSpeech();
 
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
+  // Appointments with dates
   const [appointments, setAppointments] = useState([
-    { id: 1, time: '2:30 PM', title: 'Client Meeting - John Smith', type: 'in-person', duration: '30 min' },
-    { id: 2, time: '4:00 PM', title: 'Policy Review - Sarah Johnson', type: 'video', duration: '45 min' },
+    { id: 1, date: new Date().toDateString(), time: '2:00 PM', title: 'Policy Review - Sarah Johnson', type: 'in-person', duration: '30 min', client: 'Sarah Johnson', status: 'confirmed' },
+    { id: 2, date: new Date().toDateString(), time: '3:30 PM', title: 'New Client Meeting - David Lee', type: 'video', duration: '45 min', client: 'David Lee', status: 'confirmed' },
+    { id: 3, date: new Date().toDateString(), time: '4:30 PM', title: 'Claims Discussion - Robert Martinez', type: 'in-person', duration: '30 min', client: 'Robert Martinez', status: 'pending' },
+    { id: 4, date: new Date(Date.now() + 86400000).toDateString(), time: '10:00 AM', title: 'Insurance Review - Emma Wilson', type: 'video', duration: '30 min', client: 'Emma Wilson', status: 'confirmed' },
+    { id: 5, date: new Date(Date.now() + 86400000).toDateString(), time: '2:30 PM', title: 'Claim Processing - Tom Anderson', type: 'in-person', duration: '45 min', client: 'Tom Anderson', status: 'pending' },
+    { id: 6, date: new Date(Date.now() + 172800000).toDateString(), time: '11:00 AM', title: 'New Policy Discussion - Lisa Chen', type: 'video', duration: '60 min', client: 'Lisa Chen', status: 'confirmed' },
   ]);
+
+  // Filter appointments by selected date
+  const filteredAppointments = appointments.filter(
+    apt => apt.date === selectedDate.toDateString()
+  );
 
   const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -141,7 +166,7 @@ const CalendarScreen = () => {
     setAppointmentTime('');
     setVoiceText('');
 
-    // Voice confirmation - AI-like responses
+    // Voice confirmation - conversational responses
     const meetingType = appointmentType === 'video' ? 'video call' : 'in-person meeting';
     const formattedTime = new Date(`2000-01-01T${appointmentTime}`).toLocaleTimeString('en-US', {
       hour: 'numeric',
@@ -170,27 +195,48 @@ const CalendarScreen = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ pb: 10, pt: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5" fontWeight="bold">Today's Appointments</Typography>
+    <Container maxWidth="lg" sx={{ pb: 10, pt: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontFamily: 'Roboto Slab, serif',
+            fontWeight: 700,
+            color: colors.blue
+          }}
+        >
+          Appointments
+        </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <IconButton
-            color="secondary"
             onClick={handleVoiceClick}
             sx={{
-              bgcolor: 'secondary.main',
+              width: 48,
+              height: 48,
+              borderRadius: 2,
+              background: `linear-gradient(135deg, ${colors.green} 0%, ${colors.lightGreen} 100%)`,
               color: 'white',
-              '&:hover': { bgcolor: 'secondary.dark' }
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: `0 6px 16px ${alpha(colors.green, 0.4)}`
+              }
             }}
           >
             <Mic />
           </IconButton>
           <IconButton
-            color="primary"
             sx={{
-              bgcolor: 'primary.main',
+              width: 48,
+              height: 48,
+              borderRadius: 2,
+              background: `linear-gradient(135deg, ${colors.lightBlue} 0%, ${colors.blue} 100%)`,
               color: 'white',
-              '&:hover': { bgcolor: 'primary.dark' }
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: `0 6px 16px ${alpha(colors.lightBlue, 0.4)}`
+              }
             }}
           >
             <Add />
@@ -198,20 +244,150 @@ const CalendarScreen = () => {
         </Box>
       </Box>
 
-      {appointments.map(apt => (
-        <Card key={apt.id} sx={{ mb: 2 }}>
-          <CardContent>
+      {/* Date Picker Card */}
+      <Card
+        elevation={0}
+        sx={{
+          mb: 4,
+          borderRadius: 3,
+          border: `2px solid ${alpha(colors.lightBlue, 0.3)}`,
+          background: `linear-gradient(135deg, ${alpha(colors.lightBlue, 0.05)} 0%, ${alpha(colors.blue, 0.02)} 100%)`,
+        }}
+      >
+        <CardContent sx={{ p: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Event sx={{ color: colors.lightBlue, fontSize: 28 }} />
+            <Typography variant="h6" fontWeight={700}>
+              Select Date
+            </Typography>
+          </Box>
+          <TextField
+            type="date"
+            fullWidth
+            value={selectedDate.toISOString().split('T')[0]}
+            onChange={(e) => setSelectedDate(new Date(e.target.value + 'T00:00:00'))}
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: 2,
+                fontSize: '1.1rem',
+                fontWeight: 600,
+                color: colors.blue,
+                '&:hover fieldset': {
+                  borderColor: colors.lightBlue,
+                },
+                '&.Mui-focused fieldset': {
+                  borderColor: colors.blue,
+                  borderWidth: 2,
+                },
+              },
+            }}
+          />
+          <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Chip
+              label={`${filteredAppointments.length} appointment${filteredAppointments.length !== 1 ? 's' : ''}`}
+              sx={{
+                bgcolor: alpha(colors.green, 0.15),
+                color: colors.green,
+                fontWeight: 600,
+              }}
+            />
+            <Typography variant="body2" color="text.secondary">
+              on {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Appointments List */}
+      {filteredAppointments.length > 0 ? (
+        filteredAppointments.map(apt => (
+        <Card
+          elevation={0}
+          key={apt.id}
+          sx={{
+            mb: 2.5,
+            borderRadius: 3,
+            border: `1px solid ${alpha(colors.blue, 0.1)}`,
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: `0 4px 12px ${alpha(colors.lightBlue, 0.15)}`
+            }
+          }}
+        >
+          <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'start' }}>
-              {apt.type === 'video' ? <VideoCall color="primary" sx={{ mr: 2 }} /> : <Person color="primary" sx={{ mr: 2 }} />}
+              <Box
+                sx={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  mr: 2.5,
+                  bgcolor: apt.type === 'video'
+                    ? alpha(colors.lightBlue, 0.15)
+                    : alpha(colors.green, 0.15)
+                }}
+              >
+                {apt.type === 'video' ? (
+                  <VideoCall sx={{ fontSize: 32, color: colors.lightBlue }} />
+                ) : (
+                  <Person sx={{ fontSize: 32, color: colors.green }} />
+                )}
+              </Box>
               <Box sx={{ flex: 1 }}>
-                <Typography variant="h6" fontWeight="600">{apt.time}</Typography>
-                <Typography variant="body2">{apt.title}</Typography>
-                <Chip label={apt.duration} size="small" sx={{ mt: 1 }} />
+                <Typography
+                  variant="h5"
+                  fontWeight="600"
+                  sx={{
+                    color: colors.blue,
+                    mb: 1,
+                    fontFamily: 'Roboto Slab, serif'
+                  }}
+                >
+                  {apt.time}
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 1.5, fontWeight: 500 }}>
+                  {apt.title}
+                </Typography>
+                <Chip
+                  label={apt.duration}
+                  size="medium"
+                  icon={<Event sx={{ color: `${colors.orange} !important` }} />}
+                  sx={{
+                    fontWeight: 600,
+                    bgcolor: alpha(colors.orange, 0.15),
+                    color: colors.orange,
+                    border: 'none'
+                  }}
+                />
               </Box>
             </Box>
           </CardContent>
         </Card>
-      ))}
+      ))
+      ) : (
+        <Card
+          elevation={0}
+          sx={{
+            borderRadius: 3,
+            border: `2px dashed ${alpha(colors.lightBlue, 0.3)}`,
+            background: alpha(colors.paleAqua, 0.3),
+          }}
+        >
+          <CardContent sx={{ p: 4, textAlign: 'center' }}>
+            <Event sx={{ fontSize: 64, color: alpha(colors.lightBlue, 0.4), mb: 2 }} />
+            <Typography variant="h6" color="text.secondary" gutterBottom>
+              No appointments scheduled
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              You don't have any appointments on this date.
+            </Typography>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Voice Input Dialog */}
       <Dialog

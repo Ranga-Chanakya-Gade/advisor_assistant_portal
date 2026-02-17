@@ -20,13 +20,43 @@ export const useSpeech = () => {
         const availableVoices = synthRef.current.getVoices();
         setVoices(availableVoices);
 
-        // Try to select a good default voice (English, female, natural sounding)
-        const preferredVoice = availableVoices.find(
-          voice => voice.lang.startsWith('en') && voice.name.includes('Female')
-        ) || availableVoices.find(
-          voice => voice.lang.startsWith('en')
-        ) || availableVoices[0];
+        // Log available voices for debugging
+        console.log('Available voices:', availableVoices.map(v => ({ name: v.name, lang: v.lang })));
 
+        // Try to select British English female voice with explicit name matching
+        const preferredVoice =
+          // Try specific British female voice names
+          availableVoices.find(voice => voice.name === 'Google UK English Female') ||
+          availableVoices.find(voice => voice.name === 'Microsoft Hazel Desktop - English (Great Britain)') ||
+          availableVoices.find(voice => voice.name === 'Microsoft Susan Desktop - English (Great Britain)') ||
+          availableVoices.find(voice => voice.name.includes('Karen')) ||
+          // Try any en-GB female voice
+          availableVoices.find(voice =>
+            voice.lang === 'en-GB' && (
+              voice.name.toLowerCase().includes('female') ||
+              voice.name.toLowerCase().includes('woman') ||
+              voice.name.toLowerCase().includes('susan') ||
+              voice.name.toLowerCase().includes('hazel') ||
+              voice.name.toLowerCase().includes('karen')
+            )
+          ) ||
+          // Try any en-GB voice that's not male
+          availableVoices.find(voice =>
+            voice.lang === 'en-GB' && !voice.name.toLowerCase().includes('male') && !voice.name.toLowerCase().includes('daniel') && !voice.name.toLowerCase().includes('george')
+          ) ||
+          // Try any English female voice
+          availableVoices.find(voice =>
+            voice.lang.startsWith('en') && (
+              voice.name.toLowerCase().includes('female') ||
+              voice.name.toLowerCase().includes('woman') ||
+              voice.name.toLowerCase().includes('zira') ||
+              voice.name.toLowerCase().includes('samantha')
+            )
+          ) ||
+          availableVoices.find(voice => voice.lang.startsWith('en')) ||
+          availableVoices[0];
+
+        console.log('Selected voice:', preferredVoice?.name, preferredVoice?.lang);
         setSelectedVoice(preferredVoice);
       };
 
@@ -58,8 +88,20 @@ export const useSpeech = () => {
 
     const utterance = new SpeechSynthesisUtterance(text);
 
-    // Configure voice
-    if (selectedVoice) {
+    // Get fresh voices list and select female voice
+    const currentVoices = synthRef.current.getVoices();
+
+    // Force select a female voice (Zira or any non-male voice)
+    const femaleVoice = currentVoices.find(v => v.name.includes('Zira')) ||
+                       currentVoices.find(v => v.name.toLowerCase().includes('female')) ||
+                       currentVoices.find(v => !v.name.includes('David') && !v.name.includes('Mark') && !v.name.includes('George'));
+
+    console.log('Speaking with voice:', femaleVoice?.name);
+
+    // Configure voice - use femaleVoice instead of selectedVoice
+    if (femaleVoice) {
+      utterance.voice = femaleVoice;
+    } else if (selectedVoice) {
       utterance.voice = selectedVoice;
     }
 

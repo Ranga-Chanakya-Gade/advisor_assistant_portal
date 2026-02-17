@@ -19,17 +19,39 @@ import {
   FormControl,
   InputLabel,
   Alert,
-  CircularProgress
+  CircularProgress,
+  alpha
 } from '@mui/material';
 import { Add, CheckCircle, Schedule, Flag, Mic, MicOff, Close } from '@mui/icons-material';
+
+// Color Palette
+const colors = {
+  orange: '#F6921E',
+  yellow: '#E8DE23',
+  lightGreen: '#8BC53F',
+  green: '#37A526',
+  lightBlue: '#00ADEE',
+  blue: '#1B75BB',
+  red: '#D02E2E',
+  paleAqua: '#F2F7F6',
+};
 
 const TasksScreen = () => {
   const { speak, getRandomResponse } = useSpeech();
 
   const [tasks, setTasks] = useState([
-    { id: 1, title: 'Follow up with John Smith', priority: 'high', status: 'pending', dueDate: 'Today' },
-    { id: 2, title: 'Prepare quote for Sarah Johnson', priority: 'medium', status: 'in_progress', dueDate: 'Tomorrow' },
-    { id: 3, title: 'Review policy documents', priority: 'low', status: 'pending', dueDate: 'This week' },
+    { id: 1, title: 'Follow up with John Smith', priority: 'high', dueDate: 'Today, 2:00 PM', status: 'pending' },
+    { id: 2, title: 'Prepare quote for Sarah Johnson', priority: 'high', dueDate: 'Today, 3:30 PM', status: 'pending' },
+    { id: 3, title: 'Review policy documents for Michael Chen', priority: 'medium', dueDate: 'Today, 4:00 PM', status: 'pending' },
+    { id: 4, title: 'Send birthday wishes', priority: 'medium', dueDate: 'Today, 5:00 PM', status: 'pending' },
+    { id: 5, title: 'Update CRM records', priority: 'low', dueDate: 'Today, End of day', status: 'in_progress' },
+    { id: 6, title: 'Call Emma Wilson - policy renewal', priority: 'high', dueDate: 'Today, 6:00 PM', status: 'pending' },
+    { id: 7, title: 'Process insurance claim for Robert Taylor', priority: 'high', dueDate: 'Today, 7:00 PM', status: 'pending' },
+    { id: 8, title: 'Send policy renewal reminder to clients', priority: 'medium', dueDate: 'Today, 8:00 PM', status: 'pending' },
+    { id: 9, title: 'Review new applications', priority: 'low', dueDate: 'Today, End of day', status: 'pending' },
+    { id: 10, title: 'Update pipeline in CRM', priority: 'low', dueDate: 'Today, End of day', status: 'pending' },
+    { id: 11, title: 'Prepare presentation for team meeting', priority: 'medium', dueDate: 'Today, End of day', status: 'pending' },
+    { id: 12, title: 'Review compliance documents', priority: 'low', dueDate: 'Today, End of day', status: 'pending' },
   ]);
 
   const [openVoiceDialog, setOpenVoiceDialog] = useState(false);
@@ -129,7 +151,7 @@ const TasksScreen = () => {
     setTaskTitle('');
     setVoiceText('');
 
-    // Voice confirmation - AI-like responses
+    // Voice confirmation - conversational responses
     const responses = [
       `Got it! I've added "${newTask.title}" to your task list`,
       `Perfect! I've created that task for you. It's marked as ${newTask.priority} priority`,
@@ -160,7 +182,7 @@ const TasksScreen = () => {
         : t
     ));
 
-    // Voice confirmation - AI-like responses
+    // Voice confirmation - conversational responses
     if (newStatus === 'completed') {
       const remainingTasks = tasks.filter(t => t.status !== 'completed').length - 1;
       const completionResponses = [
@@ -182,27 +204,48 @@ const TasksScreen = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ pb: 10, pt: 2 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h5" fontWeight="bold">My Tasks</Typography>
+    <Container maxWidth="lg" sx={{ pb: 10, pt: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography
+          variant="h4"
+          sx={{
+            fontFamily: 'Roboto Slab, serif',
+            fontWeight: 700,
+            color: colors.blue
+          }}
+        >
+          My Tasks
+        </Typography>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <IconButton
-            color="secondary"
             onClick={handleVoiceClick}
             sx={{
-              bgcolor: 'secondary.main',
+              width: 48,
+              height: 48,
+              borderRadius: 2,
+              background: `linear-gradient(135deg, ${colors.green} 0%, ${colors.lightGreen} 100%)`,
               color: 'white',
-              '&:hover': { bgcolor: 'secondary.dark' }
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: `0 6px 16px ${alpha(colors.green, 0.4)}`
+              }
             }}
           >
             <Mic />
           </IconButton>
           <IconButton
-            color="primary"
             sx={{
-              bgcolor: 'primary.main',
+              width: 48,
+              height: 48,
+              borderRadius: 2,
+              background: `linear-gradient(135deg, ${colors.lightBlue} 0%, ${colors.blue} 100%)`,
               color: 'white',
-              '&:hover': { bgcolor: 'primary.dark' }
+              transition: 'all 0.3s ease',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                boxShadow: `0 6px 16px ${alpha(colors.lightBlue, 0.4)}`
+              }
             }}
           >
             <Add />
@@ -212,40 +255,76 @@ const TasksScreen = () => {
 
       {tasks.map(task => (
         <Card
+          elevation={0}
           key={task.id}
           sx={{
             mb: 2,
-            opacity: task.status === 'completed' ? 0.6 : 1
+            borderRadius: 3,
+            border: `1px solid ${alpha(colors.blue, 0.1)}`,
+            opacity: task.status === 'completed' ? 0.7 : 1,
+            transition: 'all 0.3s ease',
+            '&:hover': {
+              transform: 'translateY(-2px)',
+              boxShadow: `0 4px 12px ${alpha(colors.lightBlue, 0.15)}`
+            }
           }}
         >
-          <CardContent>
+          <CardContent sx={{ p: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'start' }}>
               <IconButton
-                size="small"
-                sx={{ mt: -0.5 }}
+                size="medium"
+                sx={{
+                  mt: -0.5,
+                  mr: 1.5,
+                  color: task.status === 'completed' ? colors.green : 'action.disabled'
+                }}
                 onClick={() => toggleTaskComplete(task.id)}
               >
-                <CheckCircle
-                  color={task.status === 'completed' ? 'success' : 'disabled'}
-                />
+                <CheckCircle sx={{ fontSize: 28 }} />
               </IconButton>
-              <Box sx={{ flex: 1, ml: 1 }}>
+              <Box sx={{ flex: 1 }}>
                 <Typography
                   variant="subtitle1"
                   fontWeight="600"
                   sx={{
-                    textDecoration: task.status === 'completed' ? 'line-through' : 'none'
+                    fontSize: '1.125rem',
+                    color: task.status === 'completed' ? 'text.secondary' : 'text.primary',
+                    textDecoration: task.status === 'completed' ? 'line-through' : 'none',
+                    mb: 1.5
                   }}
                 >
                   {task.title}
                 </Typography>
-                <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   <Chip
-                    label={task.priority}
+                    label={task.priority.toUpperCase()}
                     size="small"
-                    color={task.priority === 'high' ? 'error' : task.priority === 'medium' ? 'warning' : 'default'}
+                    sx={{
+                      fontWeight: 600,
+                      bgcolor: task.priority === 'high'
+                        ? alpha(colors.red, 0.15)
+                        : task.priority === 'medium'
+                        ? alpha(colors.orange, 0.15)
+                        : alpha(colors.lightGreen, 0.15),
+                      color: task.priority === 'high'
+                        ? colors.red
+                        : task.priority === 'medium'
+                        ? colors.orange
+                        : colors.green,
+                      border: 'none'
+                    }}
                   />
-                  <Chip label={task.dueDate} size="small" icon={<Schedule />} />
+                  <Chip
+                    label={task.dueDate}
+                    size="small"
+                    icon={<Schedule sx={{ color: `${colors.blue} !important` }} />}
+                    sx={{
+                      fontWeight: 600,
+                      bgcolor: alpha(colors.lightBlue, 0.1),
+                      color: colors.blue,
+                      border: 'none'
+                    }}
+                  />
                 </Box>
               </Box>
             </Box>
